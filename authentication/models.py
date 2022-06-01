@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 
@@ -19,9 +20,12 @@ class UserManager(BaseUserManager):
 
 class CustomUser(AbstractBaseUser):
     username = models.CharField(max_length=25, unique=True)
+    followers = models.ManyToManyField(settings.AUTH_USER_MODEL, through="review.UserFollows", related_name="user_followers", symmetrical=False)
 
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = [username]
 
     objects = UserManager()
+
+
 

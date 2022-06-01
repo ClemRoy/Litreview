@@ -23,11 +23,11 @@ class Review(models.Model):
     time_created = models.DateTimeField(auto_now_add=True)
 
 
-""" class UserFollows(models.Model):
-    # Your UserFollows model definition goes here
+class UserFollows(models.Model):
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="following", on_delete=models.CASCADE)
+    following_user_id = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="followed_by", on_delete=models.CASCADE)
 
     class Meta:
         # ensures we don't get multiple UserFollows instances
         # for unique user-user_followed pairs
-        unique_together = ('user', 'followed_user', )
- """
+        unique_together = ('user_id', 'following_user_id', )

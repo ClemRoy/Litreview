@@ -1,12 +1,25 @@
+{% load static %}
 <html>
-    <head>
-        <title>LITReview</title>
-    </head>
-    <body>
-        <h1>LITReview</h1>
-        {% block content %}{% endblock content %}
-        {%  if user.is_authenticated %}
+
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="Litterature review sharing">
+    <title>LITReview</title>
+    <link rel="stylesheet" href="{% static 'review/styles.css' %}">
+</head>
+
+<body>
+    <div class="background">
+        <div class="band_header">
+            <h1>LITReview</h1>
+        </div>
+        <div class="main_content">
+            {% block content %}{% endblock content %}
+            {% if user.is_authenticated %}
             <p>Vous êtes connecté en tant que {{ request.user }}. <a href="{% url 'logout' %}">Se déconnecter</a></p>
-        {% endif %}
-    </body>
+            {% endif %}
+        </div>
+    </div>
+</body>
+
 </html>

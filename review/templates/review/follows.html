@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Gerez les Utilisateurs que vous suivez</h1>
+    <h2>Suivez un nouvel utilisateur:</h2>
+    <form method="post">
+        {{ form.as_p}}
+        {% csrf_token %}
+        <button type="submit">Ajouter</button>
+    </form>
+    <h2>Les Utilisateurs que vous suivez:</h2>
+    <h2>Les Utilisateurs qui vous susivent:</h2>
+{% endblock content %}

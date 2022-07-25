@@ -15,10 +15,13 @@
     {% if user.is_authenticated %}
     <div class="sidebar">
         <h1>LITReview</h1>
-            <p> Salut, {{ user }}</p>
-            <p><a href="{% url 'home' %}">Accueil</a></p>
-            <p><a href="{% url 'follows' %}">Follows</a></p>
-            <p><a href="{% url 'logout' %}">Se déconnecter</a></p>
+        <p> Salut, {{ user }}</p>
+        <p><a href="{% url 'home' %}">Accueil</a></p>
+        <p><a href="{% url 'your_post' %}">Vos tickets</a></p>
+        <p><a href="{% url 'ticket' %}">Créer un ticket</a></p>
+        <p><a href="{% url 'fullreview' %}">Créer une critique</a></p>
+        <p><a href="{% url 'follows' %}">Follows</a></p>
+        <p><a href="{% url 'logout' %}">Se déconnecter</a></p>
     </div>
     {% endif %}
     <div class="main_content">

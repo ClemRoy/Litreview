@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if message %}
+{{ message }}
+{% else %}
+<h2>Mise a jour du ticket</h2>
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Envoyer">
+</form>
+{% endif %}
+{% endblock content %}

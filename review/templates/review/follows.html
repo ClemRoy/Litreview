@@ -1,12 +1,23 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h1>Gerez les Utilisateurs que vous suivez</h1>
-    <h2>Suivez un nouvel utilisateur:</h2>
-    <form method="post">
-        {{ form.as_p}}
-        {% csrf_token %}
-        <button type="submit">Ajouter</button>
-    </form>
-    <h2>Les Utilisateurs que vous suivez:</h2>
-    <h2>Les Utilisateurs qui vous susivent:</h2>
+<h1>Gerez les Utilisateurs que vous suivez</h1>
+<h2>Suivez un nouvel utilisateur:</h2>
+<form method="post">
+    {{ form.as_p}}
+    {% csrf_token %}
+    <button type="submit">Ajouter</button>
+    <p>{{message}}</p>
+</form>
+<h2>Les Utilisateurs que vous suivez:</h2>
+<ul>
+    {% for followed in user_follows %}
+    <li>{{ followed.username }} <a href="{% url 'delete_follower' followed.id %}"><button>Supprimer le follower</button></a></li>
+    {% endfor %}
+</ul>
+<h2>Les Utilisateurs qui vous suivent:</h2>
+<ul>
+    {% for follower in following_users %}
+    <li>{{ follower.user.username }}</li>
+    {% endfor %}
+</ul>
 {% endblock content %}

@@ -132,3 +132,7 @@ AUTH_USER_MODEL = "authentication.CustomUser"
 LOGIN_URL = "login"
 
 LOGIN_REDIRECT_URL = "home"
+
+MEDIA_URL = "/media/"
+
+MEDIA_ROOT = "media/"

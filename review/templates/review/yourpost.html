@@ -10,10 +10,15 @@
             <img src="{{ ticket.image.url }}" >
         {% endif %}
         <p>créateur: {{ ticket.user }}</p>
-        {% if request.user == ticket.user %}
         <a href="{% url 'ticket_update' ticket.id %}"><button>Modifier</button></a>
         <a href="{% url 'delete_ticket' ticket.id %}"><button>Supprimer</button></a>
+        {% if ticket.reviews %}
+            <h4>Liste des critiques:</h4>
+            {% for review in ticket.reviews %}
+                <h5>{{ review.headline }}</h5>
+                <p> {{ review.body }}</p>
+                <p>Utilisateur: {{ review.user }}</p>
+            {% endfor %}
         {% endif %}
     {% endfor %}
 {% endblock content %}
-

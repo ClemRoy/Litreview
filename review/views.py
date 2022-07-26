@@ -1,4 +1,5 @@
-from distutils.log import log
+from itertools import chain
+from django.db.models import CharField, Value
 from django.db import IntegrityError
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
@@ -16,18 +17,23 @@ from review import models as review_models
 def home(request):
     tickets = sorted(review_models.Ticket.objects.all(),
                      key=lambda post: post.time_created, reverse=True)
+    for ticket in tickets:
+        if ticket.review_count != 0:
+            review = review_models.Review.objects.get(ticket=ticket)
+            ticket.review = review
     return render(request, "review/home.html", context={"tickets": tickets})
 
 
 @login_required
 def your_post(request):
-    tickets = sorted(review_models.Ticket.objects.filter(
-        user=request.user), key=lambda post: post.time_created, reverse=True)
-    for ticket in tickets:
-        ticket_reviews = sorted(review_models.Review.objects.filter(
-            ticket=ticket), key=lambda post: post.time_created, reverse=True)
-        ticket.reviews = ticket_reviews
-    return render(request, "review/yourpost.html", context={"tickets": tickets})
+    tickets_raw = review_models.Ticket.objects.filter(user=request.user)
+    tickets = tickets_raw.annotate(content_type=Value('ticket', CharField()))
+    reviews_raw = review_models.Review.objects.filter(user=request.user)
+    reviews = reviews_raw.annotate(content_type=Value('review', CharField()))
+    posts = sorted(chain(tickets, reviews),
+                   key=lambda post: post.time_created, reverse=True)
+
+    return render(request, "review/yourpost.html", context={"posts": posts})
 
 
 @login_required
@@ -67,10 +73,11 @@ def ticket(request):
     form = forms.TicketForm()
     if request.method == "POST":
         form = forms.TicketForm(request.POST, request.FILES)
-        ticket = form.save(commit=False)
-        ticket.user = request.user
-        ticket.save()
-        return redirect("home")
+        if form.is_valid():
+            ticket = form.save(commit=False)
+            ticket.user = request.user
+            ticket.save()
+            return redirect("home")
     return render(request, "review/ticket.html", context={"form": form})
 
 
@@ -84,6 +91,7 @@ def ticket_and_review_upload(request):
         if any([ticket_form.is_valid(), review_form.is_valid()]):
             ticket = ticket_form.save(commit=False)
             ticket.user = request.user
+            ticket.review_count = 1
             ticket.save()
             review = review_form.save(commit=False)
             review.user = request.user
@@ -101,7 +109,7 @@ def ticket_update(request, id):
     ticket = review_models.Ticket.objects.get(id=id)
     if ticket.user == request.user:
         if request.method == 'POST':
-            form = TicketForm(request.POST, instance=ticket)
+            form = TicketForm(request.POST, request.FILES, instance=ticket)
             if form.is_valid():
                 form.save()
                 return redirect("home")
@@ -125,6 +133,7 @@ def delete_ticket(request, id):
         message = "Vous ne pouvez pas supprimer un ticket crée par un autre utilisateur"
         return render(request, "review/ticket_update.html", {"message": message})
 
+
 @login_required
 def delete_follower(request, key_id):
     user_to_unfollow = auth_models.CustomUser.objects.get(id=key_id)
@@ -134,3 +143,24 @@ def delete_follower(request, key_id):
         follow_relation.delete()
         return redirect("follows")
     return render(request, "review/delete_follower.html", {"followed_user": user_to_unfollow})
+
+
+@login_required
+def answer_ticket(request, id):
+    form = forms.ReviewForm()
+    ticket = review_models.Ticket.objects.get(id=id)
+    if ticket.review_count != 0:
+        message = "Ce ticket a déjà une critique,vous ne pouvez en créer une nouvelle"
+        return render(request, "review/create_review.html", {"message": message})
+    else:
+        if request.method == "POST":
+            form = forms.ReviewForm(request.POST)
+            if form.is_valid():
+                ticket.review_count = 1
+                review = form.save(commit=False)
+                review.user = request.user
+                review.ticket = ticket
+                ticket.save()
+                review.save()
+                return redirect("home")
+    return render(request, "review/create_review.html", {"form": form, "ticket": ticket})

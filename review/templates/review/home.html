@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h2>Tickets:</h2>
+    <h2>Vos Tickets:</h2>
     {% for ticket in tickets %}
         <h3>Titre: {{ ticket.title }}</h3>
         <h3>Déscription:</h3>
@@ -10,6 +10,14 @@
             <img src="{{ ticket.image.url }}" >
         {% endif %}
         <p>créateur: {{ ticket.user }}</p>
+        {% if ticket.review_count == 0 %}
+        <a href="{% url 'answer_ticket' ticket.id %}"><button>Répondre</button></a>
+        {% else %}
+        <h4>Critique:</h4>
+        <h5>{{ ticket.review.headline }}</h5>
+        <p> {{ ticket.review.body }}</p>
+        <p>Utilisateur: {{ ticket.review.user }}</p>
+        {% endif %}
         {% if request.user == ticket.user %}
         <a href="{% url 'ticket_update' ticket.id %}"><button>Modifier</button></a>
         <a href="{% url 'delete_ticket' ticket.id %}"><button>Supprimer</button></a>

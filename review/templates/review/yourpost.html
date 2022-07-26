@@ -1,24 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h2>Tickets:</h2>
-    {% for ticket in tickets %}
-        <h3>Titre: {{ ticket.title }}</h3>
-        <h3>Déscription:</h3>
-        <p>{{ ticket.description }}</p>
-        {% if ticket.image %}
-            <h3>Image:</h3>
-            <img src="{{ ticket.image.url }}" >
-        {% endif %}
-        <p>créateur: {{ ticket.user }}</p>
-        <a href="{% url 'ticket_update' ticket.id %}"><button>Modifier</button></a>
-        <a href="{% url 'delete_ticket' ticket.id %}"><button>Supprimer</button></a>
-        {% if ticket.reviews %}
-            <h4>Liste des critiques:</h4>
-            {% for review in ticket.reviews %}
-                <h5>{{ review.headline }}</h5>
-                <p> {{ review.body }}</p>
-                <p>Utilisateur: {{ review.user }}</p>
-            {% endfor %}
-        {% endif %}
-    {% endfor %}
+
+<h2>Tickets:</h2>
+{% for post in posts %}
+    {% if post.content_type == "ticket" %}
+        {% include "review/snippets/ticket_snippet.html" %}
+    {% elif post.content_type == "review" %}
+        {% include "review/snippets/review_snippet.html" %}
+    {% endif %}
+{% endfor %}
+
 {% endblock content %}

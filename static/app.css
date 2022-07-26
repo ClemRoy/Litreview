@@ -1,20 +1,140 @@
+html {
+    height: 100%;
+    width: 100%;
+}
+
 body {
     margin: 0px;
     border: 0px;
 }
 
-
-.band_header {
-    position: absolute;
-    background-color: cadetblue;
-    height: 6%;
-    width: 100%;
-    top: 0px;
-    margin-left: 0px;
-    
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
 }
 
 .main_content {
-    position: relative;
-    top: 6%;
+    flex-grow: 1;
+}
+
+.topnav {
+    background-color: cadetblue;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.topnav .greeting .message {
+    flex-grow: 1;
+    align-items: center;
+}
+
+.topnav .navcell {
+    justify-content: flex-end;
+}
+
+
+.topnav .navcell a {
+    text-align: center;
+    padding: 14px 16px;
+    border: 1px rgb(62, 112, 113) groove;
+    box-shadow: 1px 1px 1px rgb(62, 112, 113) inset;
+}
+
+.topnav .navcell a:hover {
+    background-color: rgb(62, 112, 113);
+    color: black;
+}
+
+.main_content {
+    border: 1px black;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.main_content h2 {
+    justify-content: space-around;
+    align-items: center;
+}
+
+.ticket {
+    display: flex;
+    flex-direction: column;
+    border: 1px black;
+    justify-content: center;
+    align-items: center;
+    border: 1px black solid;
+    margin: 10px;
+}
+
+.ticket .header {
+    border: none;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 15%;
+    justify-content: space-between;
+}
+
+.ticket .header p {
+    margin: 5px;
+    padding: 5px;
+}
+
+.ticket .body {
+    border: none;
+    display: flex;
+    width: 100%;
+    align-items: flex-start;
+    margin-left: 40px;
+}
+
+.ticket .foot {
+    width: 100%;
+    border: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-end;
+
+}
+
+.ticket .foot button {
+    margin: 5px;
+    padding: 5px;
+}
+
+.review {
+    display: flex;
+    flex-direction: column;
+    border: 1px black;
+    justify-content: center;
+    align-items: center;
+    border: 1px black solid;
+    margin: 10px;
+}
+
+.review .header {
+    border: none;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 15%;
+    justify-content: space-between;
+}
+
+.review .body {
+    border: none;
+    width: 100%;
+    justify-content: flex-start;
+}
+
+.review .title {
+    border: none;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: center;
 }

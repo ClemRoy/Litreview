@@ -1,0 +1,28 @@
+<div class="ticket">
+    <div class="ticket header">
+        {% if request.user == post.user %}
+        <p>Vous avez publié un ticket</p>
+        {% elif post.user != request.user %}
+        <p>{{ post.user}} a publié un ticket</p>
+        {% endif %}
+        <p> {{ post.time_created }}</p>
+    </div>
+    <div class="ticket body">
+        <h3>Titre:</h3>
+        <p> {{ post.title }}</p>
+        <h3>Déscription:</h3>
+        <p>{{ post.description }}</p>
+        {% if post.image %}
+        <h3>Image:</h3>
+        <img src="{{ ticket.image.url }}">
+        {% endif %}
+    </div>
+    <div class="ticket foot">
+        {% if post.review_count == 0 %}
+        <a href="{% url 'answer_ticket' post.id %}"><button>Répondre</button></a>
+        {% endif %}
+        <a href="{% url 'ticket_update' post.id %}"><button>Modifier</button></a>
+        <a href="{% url 'delete_ticket' post.id %}"><button>Supprimer</button></a>        
+    </div>
+</div>
+

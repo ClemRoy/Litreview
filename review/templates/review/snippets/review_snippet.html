@@ -1,0 +1,43 @@
+<div class="review">
+    <div class="review header">
+        {% if request.user == post.user %}
+        <p>Vous avez publié une critique</p>
+        {% endif %}
+        <p> {{ post.time_created }}</p>
+    </div>
+    <div class="review main header">
+        <div class="review main header title ">
+            <h3>Titre:</h3>
+            <p>{{ post.headline }}</p>
+        </div>
+        <div class="review main header rating">
+            <p>ratings:{{ post.rating }}</p>
+        </div>
+    </div>
+    <div class="review main body">
+        {{ post.body }}
+    </div>
+    <div class="review incrusted ticket">
+        <div class="review incrusted ticket header">
+            {% if request.user == post.ticket.user %}
+            <p>Vous avez publié un ticket</p>
+            {% elif post.ticket.user != request.user %}
+            <p>{{ post.user}} a publié un ticket</p>
+            {% endif %}
+            <p> {{ post.time_created }}</p>
+        </div>
+        <div class="review incrusted ticket body">
+            <h3>Titre:</h3>
+            <p> {{ post.ticket.title }}</p>
+            <h3>Déscription:</h3>
+            <p>{{ post.ticket.description }}</p>
+            {% if post.ticket.image %}
+            <h3>Image:</h3>
+            <img src="{{ post.ticket.image.url }}">
+            {% endif %}
+        </div>
+    </div>
+    <div class="review foot">
+
+    </div>
+</div>

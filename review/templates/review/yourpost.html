@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h2>Tickets:</h2>
+<h2>Vos publications:</h2>
 {% for post in posts %}
     {% if post.content_type == "ticket" %}
         {% include "review/snippets/ticket_snippet.html" %}

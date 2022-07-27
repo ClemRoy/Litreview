@@ -5,12 +5,12 @@
         {% endif %}
         <p> {{ post.time_created }}</p>
     </div>
-    <div class="review main header">
-        <div class="review main header title ">
+    <div class="review mainheader">
+        <div class="review mainheadertitle ">
             <h3>Titre:</h3>
             <p>{{ post.headline }}</p>
         </div>
-        <div class="review main header rating">
+        <div class="review mainheaderrating">
             <p>ratings:{{ post.rating }}</p>
         </div>
     </div>
@@ -38,6 +38,9 @@
         </div>
     </div>
     <div class="review foot">
-
+        {% if request.user == post.user %}
+        <a href="{% url 'review_update' post.id %}"><button>Modifier</button></a>
+        <a href="{% url 'delete_review' post.id %}"><button>Supprimer</button></a>
+        {% endif %}
     </div>
 </div>

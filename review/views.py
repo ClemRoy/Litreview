@@ -1,4 +1,5 @@
 from itertools import chain
+from re import T
 from django.db.models import CharField, Value
 from django.db import IntegrityError
 from django.shortcuts import redirect, render
@@ -6,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 
 from . import forms
 from review.models import Ticket
-from review.forms import TicketForm, addFollowForm
+from review.forms import ReviewForm, TicketForm, addFollowForm
 from django.contrib.auth.models import User
 from authentication import models as auth_models
 from review import models as review_models
@@ -15,13 +16,28 @@ from review import models as review_models
 
 @login_required
 def home(request):
-    tickets = sorted(review_models.Ticket.objects.all(),
-                     key=lambda post: post.time_created, reverse=True)
-    for ticket in tickets:
-        if ticket.review_count != 0:
-            review = review_models.Review.objects.get(ticket=ticket)
-            ticket.review = review
-    return render(request, "review/home.html", context={"tickets": tickets})
+    followers = request.user.followers.all()
+    user_tickets_raw = review_models.Ticket.objects.filter(user=request.user)
+    user_tickets = user_tickets_raw.annotate(content_type=Value('ticket', CharField()))
+    user_reviews_raw = review_models.Review.objects.filter(user=request.user)
+    user_reviews = user_reviews_raw.annotate(content_type=Value('review', CharField()))
+    feed = chain(user_tickets,user_reviews)
+    for ticket in user_tickets:
+        answers_raw = review_models.Review.objects.filter(ticket=ticket)
+        answers = answers_raw.annotate(content_type=Value('review', CharField()))
+        feed = chain(feed,answers)
+    for follower in followers:
+        followers_tickets_raw = review_models.Ticket.objects.filter(user=follower)
+        followers_tickets = followers_tickets_raw.annotate(content_type=Value('ticket', CharField()))
+        for ticket in followers_tickets:
+            followers_answered_raw = review_models.Review.objects.filter(ticket=ticket)
+            followers_answered = followers_answered_raw.annotate(content_type=Value('review', CharField()))
+            feed = chain(feed,followers_answered)
+        followers_reviews_raw = review_models.Review.objects.filter(user=follower)
+        followers_reviews = followers_reviews_raw.annotate(content_type=Value('review', CharField()))
+        feed= chain(feed,followers_reviews,followers_tickets)
+    feed_ready = sorted(feed,key=lambda post: post.time_created,reverse=True)
+    return render(request, "review/home.html", context={"feed_ready": feed_ready})
 
 
 @login_required
@@ -120,6 +136,22 @@ def ticket_update(request, id):
         message = "Vous ne pouvez pas modifier un ticket crée par un autre utilisateur"
         return render(request, "review/ticket_update.html", {"message": message})
 
+@login_required
+def review_update(request, id):
+    review = review_models.Review.objects.get(id=id)
+    if review.user == request.user:
+        if request.method == 'POST':
+            form = ReviewForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect("home")
+        else:
+            form = ReviewForm(instance=review)
+        return render(request, "review/review_update.html", {"form": form})
+    else:
+        message = "Vous ne pouvez pas modifier une critique crée par un autre utilisateur"
+        return render(request, "review/review_update.html", {"message": message})
+
 
 @login_required
 def delete_ticket(request, id):
@@ -132,6 +164,18 @@ def delete_ticket(request, id):
     else:
         message = "Vous ne pouvez pas supprimer un ticket crée par un autre utilisateur"
         return render(request, "review/ticket_update.html", {"message": message})
+
+@login_required
+def delete_review(request, id):
+    review_to_delete = review_models.Review.objects.get(id=id)
+    if review_to_delete.user == request.user:
+        if request.method == "POST":
+            review_to_delete.delete()
+            return redirect("home")
+        return render(request, "review/review_delete.html", {"review": review_to_delete})
+    else:
+        message = "Vous ne pouvez pas supprimer un ticket crée par un autre utilisateur"
+        return render(request, "review/review_delete.html", {"message": message})
 
 
 @login_required

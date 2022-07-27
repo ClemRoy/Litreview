@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+<div class="followmain">
 <h1>Gerez les Utilisateurs que vous suivez</h1>
 <h2>Suivez un nouvel utilisateur:</h2>
 <form method="post">
@@ -20,4 +21,5 @@
     <li>{{ follower.user.username }}</li>
     {% endfor %}
 </ul>
+</div>
 {% endblock content %}

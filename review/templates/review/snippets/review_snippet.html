@@ -2,6 +2,8 @@
     <div class="review header">
         {% if request.user == post.user %}
         <p>Vous avez publié une critique</p>
+        {% elif post.user != request.user %}
+        <p>{{ post.user}} a publié une critique</p>
         {% endif %}
         <p> {{ post.time_created }}</p>
     </div>
@@ -22,7 +24,7 @@
             {% if request.user == post.ticket.user %}
             <p>Vous avez publié un ticket</p>
             {% elif post.ticket.user != request.user %}
-            <p>{{ post.user}} a publié un ticket</p>
+            <p>{{ post.ticket.user}} a publié un ticket</p>
             {% endif %}
             <p> {{ post.time_created }}</p>
         </div>

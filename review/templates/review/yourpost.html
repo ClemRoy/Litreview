@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
-
+<div class="maincontent sectiontitle">
 <h2>Vos publications:</h2>
+</div>
 {% for post in posts %}
     {% if post.content_type == "ticket" %}
         {% include "review/snippets/ticket_snippet.html" %}

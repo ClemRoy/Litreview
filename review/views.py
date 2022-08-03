@@ -1,12 +1,12 @@
 from itertools import chain
 from re import T
-from django.db.models import CharField, Value
+from django.db.models import CharField, Value,Q
 from django.db import IntegrityError
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 
 from . import forms
-from review.models import Ticket
+from review.models import Review, Ticket
 from review.forms import ReviewForm, TicketForm, addFollowForm
 from django.contrib.auth.models import User
 from authentication import models as auth_models
@@ -14,29 +14,30 @@ from review import models as review_models
 # Create your views here.
 
 
+
+def collect_followers(current_user):
+    followers_queryset = current_user.followers.all()
+    followers = [follower for follower in followers_queryset]
+    followers.append(current_user)
+    return followers
+
+def collect_tickets(current_user):
+    followers = collect_followers(current_user)
+    tickets_raw = review_models.Ticket.objects.filter(user__in=followers)
+    tickets = tickets_raw.annotate(content_type=Value('ticket', CharField()))
+    return tickets
+
+def collect_reviews(current_user):
+    followers = collect_followers(current_user)
+    review_raw = review_models.Review.objects.filter(Q(user__in=followers)|Q(ticket__user=current_user))
+    review = review_raw.annotate(content_type=Value('review', CharField()))
+    return review
+
 @login_required
 def home(request):
-    followers = request.user.followers.all()
-    user_tickets_raw = review_models.Ticket.objects.filter(user=request.user)
-    user_tickets = user_tickets_raw.annotate(content_type=Value('ticket', CharField()))
-    user_reviews_raw = review_models.Review.objects.filter(user=request.user)
-    user_reviews = user_reviews_raw.annotate(content_type=Value('review', CharField()))
-    feed = chain(user_tickets,user_reviews)
-    for ticket in user_tickets:
-        answers_raw = review_models.Review.objects.filter(ticket=ticket)
-        answers = answers_raw.annotate(content_type=Value('review', CharField()))
-        feed = chain(feed,answers)
-    for follower in followers:
-        followers_tickets_raw = review_models.Ticket.objects.filter(user=follower)
-        followers_tickets = followers_tickets_raw.annotate(content_type=Value('ticket', CharField()))
-        for ticket in followers_tickets:
-            followers_answered_raw = review_models.Review.objects.filter(ticket=ticket)
-            followers_answered = followers_answered_raw.annotate(content_type=Value('review', CharField()))
-            feed = chain(feed,followers_answered)
-        followers_reviews_raw = review_models.Review.objects.filter(user=follower)
-        followers_reviews = followers_reviews_raw.annotate(content_type=Value('review', CharField()))
-        feed= chain(feed,followers_reviews,followers_tickets)
-    feed_ready = sorted(feed,key=lambda post: post.time_created,reverse=True)
+    tickets = collect_tickets(request.user)
+    reviews = collect_reviews(request.user)
+    feed_ready = sorted(chain(tickets,reviews),key=lambda post: post.time_created,reverse=True)
     return render(request, "review/home.html", context={"feed_ready": feed_ready})
 
 
@@ -131,23 +132,24 @@ def ticket_update(request, id):
                 return redirect("home")
         else:
             form = TicketForm(instance=ticket)
-        return render(request, "review/ticket_update.html", {"form": form})
+        return render(request, "review/ticket_update.html", {"form": form, "ticket":ticket})
     else:
         message = "Vous ne pouvez pas modifier un ticket crée par un autre utilisateur"
         return render(request, "review/ticket_update.html", {"message": message})
 
 @login_required
 def review_update(request, id):
-    review = review_models.Review.objects.get(id=id)
+    review = get_object_or_404(review_models.Review,id=id)
     if review.user == request.user:
         if request.method == 'POST':
-            form = ReviewForm(request.POST)
+            form = ReviewForm(request.POST, instance=review)
+            print(request.POST)
             if form.is_valid():
                 form.save()
                 return redirect("home")
         else:
             form = ReviewForm(instance=review)
-        return render(request, "review/review_update.html", {"form": form})
+        return render(request, "review/review_update.html", {"form": form, "review":review})
     else:
         message = "Vous ne pouvez pas modifier une critique crée par un autre utilisateur"
         return render(request, "review/review_update.html", {"message": message})

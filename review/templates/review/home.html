@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
+    <div class="main_content quicklink">
+        <a href="{% url 'ticket' %}"> <button> Demander une critique </button></a>
+        <a href="{% url 'fullreview' %}"> <button>Créer une critique </button></a>
+    </div>
     {% for post in feed_ready %}
         {% if post.content_type == "ticket" %}
             {% include "review/snippets/ticket_snippet.html" %}

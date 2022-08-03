@@ -12,22 +12,16 @@
     <div class="wrapper">
         <div class="topnav">
             <div class="topnav greeting">
-                <div class="topnav greeting name">
                 <h1>LITReview</h1>
-                </div>
-                <div class="topnav greeting message">
                 {% if user.is_authenticated %}
                 <p> Bonjour, {{ user }}</p>
                 {% endif %}
-                </div>
             </div>
             {% if user.is_authenticated %}
             <div class="topnav navcell">
-                <a href="{% url 'home' %}">Accueil</a>
-                <a href="{% url 'your_post' %}">Vos tickets</a>
-                <a href="{% url 'ticket' %}">Créer un ticket</a>
-                <a href="{% url 'fullreview' %}">Créer une critique</a>
-                <a href="{% url 'follows' %}">Follows</a>
+                <a href="{% url 'home' %}">Flux</a>
+                <a href="{% url 'your_post' %}">Vos posts</a>
+                <a href="{% url 'follows' %}">Abonnements</a>
                 <a href="{% url 'logout' %}">Se déconnecter</a>
             </div>
             {% endif %}

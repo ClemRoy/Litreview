@@ -2,21 +2,16 @@
 {% block content %}
 {% if message %}
 {{ message }}
-{% else %}
+{% elif post %}
 <h2>Créer une critique</h2>
 <h3>Vous êtes en train de poster en réponse à:</h3>
-<h3>Titre: {{ ticket.title }}</h3>
-<h3>Déscription:</h3>
-<p>{{ ticket.description }}</p>
-{% if ticket.image %}
-    <h3>Image:</h3>
-    <img src="{{ ticket.image.url }}" >
-{% endif %}
-<p>créateur: {{ ticket.user }}</p>
+{% include "review/snippets/ticket_snippet.html" %}
+<div class="ticketanswer">
 <form action="" method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Envoyer">
 </form>
+</div>
 {% endif %}
 {% endblock content %}

@@ -1,21 +1,23 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
 {% if message %}
 {{ message }}
-{% else %}
+{% elif post %}
 <p>Vous allez supprimer le ticket suivant:</p>
-<h3>Titre: {{ ticket.title }}</h3>
-<h3>Déscription:</h3>
-<p>{{ ticket.description }}</p>
-{% if ticket.image %}
-<h3>Image:</h3>
-<img src="{{ ticket.image.url }}">
+{% include "review/snippets/ticket_snippet.html" %}
+<div class="ticketdeleteform">
+    <form action="" method="post">
+        {% csrf_token %}
+        <input type="submit" value="Supprimer">
+    </form>
+    <form action="{% url 'home' %}" method="get">
+        <button>Annuler</button>
+    </form>
+</div>
 {% endif %}
-<p>créateur: {{ ticket.user }}</p>
-<form action="" method="post">
-    {% csrf_token %}
-    <input type="submit" value="Supprimer">
-</form>
-<a href="{% url 'home' %}"><button>Annuler</button></a>
-{% endif %}
+{% block page_scripts %}
+<script src="{% static 'button_deletion.js' %}"></script>
+{% endblock %}
 {% endblock content %}

@@ -1,18 +1,17 @@
-from itertools import chain
-from re import T
-from django.db.models import CharField, Value,Q
+
+from django.db.models import CharField, Value, Q
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 
 from . import forms
-from review.models import Review, Ticket
-from review.forms import ReviewForm, TicketForm, addFollowForm
-from django.contrib.auth.models import User
 from authentication import models as auth_models
 from review import models as review_models
-# Create your views here.
+from review.forms import ReviewForm, TicketForm
 
+from itertools import chain
+
+# Create your views here.
 
 
 def collect_followers(current_user):
@@ -21,24 +20,30 @@ def collect_followers(current_user):
     followers.append(current_user)
     return followers
 
+
 def collect_tickets(current_user):
     followers = collect_followers(current_user)
     tickets_raw = review_models.Ticket.objects.filter(user__in=followers)
     tickets = tickets_raw.annotate(content_type=Value('ticket', CharField()))
     return tickets
 
+
 def collect_reviews(current_user):
     followers = collect_followers(current_user)
-    review_raw = review_models.Review.objects.filter(Q(user__in=followers)|Q(ticket__user=current_user))
+    review_raw = review_models.Review.objects.filter(
+        Q(user__in=followers) | Q(ticket__user=current_user))
     review = review_raw.annotate(content_type=Value('review', CharField()))
     return review
+
 
 @login_required
 def home(request):
     tickets = collect_tickets(request.user)
     reviews = collect_reviews(request.user)
-    feed_ready = sorted(chain(tickets,reviews),key=lambda post: post.time_created,reverse=True)
-    return render(request, "review/home.html", context={"feed_ready": feed_ready})
+    feed_ready = sorted(chain(tickets, reviews),
+                        key=lambda post: post.time_created, reverse=True)
+    return render(request, "review/home.html",
+                  context={"feed_ready": feed_ready})
 
 
 @login_required
@@ -64,9 +69,14 @@ def follows(request):
         form = forms.addFollowForm(request.POST)
         if form.is_valid():
             user_to_add = form.cleaned_data["followed_user_name"]
-            if auth_models.CustomUser.objects.filter(username=user_to_add).exists():
+            if not auth_models.CustomUser.objects.filter(
+                    username=user_to_add).exists():
+                message = "L'utilisateur n'existe pas"
+            else:
                 current_user = request.user
-                if current_user.username != user_to_add:
+                if not current_user.username != user_to_add:
+                    message = "Vous ne pouvez pas vous suivre vous même"
+                else:
                     user_to_follow = auth_models.CustomUser.objects.get(
                         username=user_to_add)
                     try:
@@ -77,12 +87,11 @@ def follows(request):
                         message = f"Vous suivez désormais {user_to_follow}"
                     except IntegrityError:
                         message = f"vous suivez déjà {user_to_add}"
-                else:
-                    message = "Vous ne pouvez pas vous suivre vous même"
-            else:
-                message = "L'utilisateur n'existe pas"
 
-    return render(request, "review/follows.html", context={"form": form, "message": message, "user_follows": user_follows, "following_users": following_users})
+    return render(request, "review/follows.html",
+                  context={"form": form, "message": message,
+                           "user_follows": user_follows,
+                           "following_users": following_users})
 
 
 @login_required
@@ -132,27 +141,36 @@ def ticket_update(request, id):
                 return redirect("home")
         else:
             form = TicketForm(instance=ticket)
-        return render(request, "review/ticket_update.html", {"form": form, "ticket":ticket})
+        return render(request, "review/ticket_update.html",
+                      {"form": form, "post": ticket})
     else:
-        message = "Vous ne pouvez pas modifier un ticket crée par un autre utilisateur"
-        return render(request, "review/ticket_update.html", {"message": message})
+        message = "Vous ne pouvez pas modifier \
+            un ticket crée par un autre utilisateur"
+        return render(request,
+                      "review/ticket_update.html",
+                      {"message": message})
+
 
 @login_required
 def review_update(request, id):
-    review = get_object_or_404(review_models.Review,id=id)
+    review = get_object_or_404(review_models.Review, id=id)
     if review.user == request.user:
         if request.method == 'POST':
             form = ReviewForm(request.POST, instance=review)
-            print(request.POST)
             if form.is_valid():
                 form.save()
                 return redirect("home")
         else:
             form = ReviewForm(instance=review)
-        return render(request, "review/review_update.html", {"form": form, "review":review})
+        return render(request,
+                      "review/review_update.html",
+                      {"form": form, "post": review})
     else:
-        message = "Vous ne pouvez pas modifier une critique crée par un autre utilisateur"
-        return render(request, "review/review_update.html", {"message": message})
+        message = "Vous ne pouvez pas modifier une critique \
+             crée par un autre utilisateur"
+        return render(request,
+                      "review/review_update.html",
+                      {"message": message})
 
 
 @login_required
@@ -162,22 +180,36 @@ def delete_ticket(request, id):
         if request.method == "POST":
             ticket_to_delete.delete()
             return redirect("home")
-        return render(request, "review/delete_ticket.html", {"ticket": ticket_to_delete})
+        return render(request,
+                      "review/delete_ticket.html",
+                      {"post": ticket_to_delete})
     else:
-        message = "Vous ne pouvez pas supprimer un ticket crée par un autre utilisateur"
-        return render(request, "review/ticket_update.html", {"message": message})
+        message = "Vous ne pouvez pas supprimer un \
+            ticket crée par un autre utilisateur"
+        return render(request,
+                      "review/ticket_update.html",
+                      {"message": message})
+
 
 @login_required
 def delete_review(request, id):
     review_to_delete = review_models.Review.objects.get(id=id)
+    ticket = review_to_delete.ticket
     if review_to_delete.user == request.user:
         if request.method == "POST":
             review_to_delete.delete()
+            ticket.review_count = 0
+            ticket.save()
             return redirect("home")
-        return render(request, "review/review_delete.html", {"review": review_to_delete})
+        return render(request,
+                      "review/review_delete.html",
+                      {"post": review_to_delete})
     else:
-        message = "Vous ne pouvez pas supprimer un ticket crée par un autre utilisateur"
-        return render(request, "review/review_delete.html", {"message": message})
+        message = "Vous ne pouvez pas supprimer un \
+            ticket crée par un autre utilisateur"
+        return render(request,
+                      "review/review_delete.html",
+                      {"message": message})
 
 
 @login_required
@@ -188,7 +220,9 @@ def delete_follower(request, key_id):
     if request.method == "POST":
         follow_relation.delete()
         return redirect("follows")
-    return render(request, "review/delete_follower.html", {"followed_user": user_to_unfollow})
+    return render(request,
+                  "review/delete_follower.html",
+                  {"followed_user": user_to_unfollow})
 
 
 @login_required
@@ -196,8 +230,11 @@ def answer_ticket(request, id):
     form = forms.ReviewForm()
     ticket = review_models.Ticket.objects.get(id=id)
     if ticket.review_count != 0:
-        message = "Ce ticket a déjà une critique,vous ne pouvez en créer une nouvelle"
-        return render(request, "review/create_review.html", {"message": message})
+        message = "Ce ticket a déjà une critique, \
+            vous ne pouvez en créer une nouvelle"
+        return render(request,
+                      "review/create_review.html",
+                      {"message": message})
     else:
         if request.method == "POST":
             form = forms.ReviewForm(request.POST)
@@ -209,4 +246,6 @@ def answer_ticket(request, id):
                 ticket.save()
                 review.save()
                 return redirect("home")
-    return render(request, "review/create_review.html", {"form": form, "ticket": ticket})
+    return render(request,
+                  "review/create_review.html",
+                  {"form": form, "post": ticket})

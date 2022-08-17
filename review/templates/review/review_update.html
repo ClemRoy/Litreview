@@ -1,25 +1,25 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
 {% if message %}
 {{ message }}
-{% else %}
-<p>Vous allez supprimer la critique suivante:</p>
-<h3>Titre: {{ review.headline }}</h3>
-<h3> Critique:</h3>
-<p>{{ review.body }}</p>
-<p>Qui répond au ticket suivant:</p>
-<h3>Titre: {{ review.ticket.title }}</h3>
-<h3>Déscription:</h3>
-<p>{{ review.ticket.description }}</p>
-{% if review.ticket.image %}
-<h3>Image:</h3>
-<img src="{{ review.ticket.image.url }}">
-{% endif %}
-<p>créateur: {{ review.ticket.user }}</p>
+{% elif post %}
+<p>Vous allez modifier la critique suivante:</p>
+{% include "review/snippets/review_snippet.html" %}
+<div class="reviewupdate">
 <form action="" method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Envoyer">
 </form>
+</div>
+<div class="reviewupdatecancel">
+<form action="{% url 'home' %}" method="get"><button>Annuler</button></form>
+</div>
+{% block page_scripts %}
+<script src="{% static 'button_deletion.js' %}"></script>
+<script src="{% static 'rating.js' %}"></script>
+
+{% endblock %}
 {% endif %}
 {% endblock content %}

@@ -14,7 +14,6 @@ body {
     min-height: 100%;
 }
 
-
 .topnav {
     position: sticky;
     background-color: cadetblue;
@@ -24,6 +23,10 @@ body {
     width: 100%;
 }
 
+img {
+    height: 800px;
+    width: 800px;
+}
 
 .topnav .greeting {
     align-items: center;
@@ -39,13 +42,10 @@ body {
     text-align: center;
 }
 
-
-
 .topnav .navcell {
     display: flex;
     justify-content: flex-end;
 }
-
 
 .topnav .navcell a {
     text-align: center;
@@ -62,7 +62,9 @@ body {
 .main_content {
     display: flex;
     flex-direction: column;
-    margin-top: 10px;
+    margin: 10px;
+    margin-bottom: 15px;
+    padding: 10px;
     border: 1px black;
     flex-grow: 1;
     justify-content: space-around;
@@ -73,6 +75,7 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
+    height: 80px;
 }
 
 .main_content .quicklink button {
@@ -84,11 +87,11 @@ body {
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-  }
+}
 
-  .main_content .quicklink button:hover {
+.main_content .quicklink button:hover {
     background-color: rgb(53, 101, 101);
-  }
+}
 
 .main_content .sectiontitle {
     text-align: center;
@@ -101,7 +104,8 @@ body {
     justify-content: center;
     align-items: center;
     border: 1px black solid;
-    margin: 10px;
+    padding: 5px;
+    margin: 5px;
 }
 
 .ticket .header {
@@ -113,17 +117,20 @@ body {
     justify-content: space-between;
 }
 
-.ticket .header p {
-    margin: 5px;
-    padding: 5px;
-}
 
 .ticket .body {
     border: none;
-    display: flex;
     width: 100%;
+    justify-content: flex-start;
     align-items: flex-start;
-    margin-left: 40px;
+}
+
+.ticket .body h3 {
+    font-size: 1.6em;
+}
+
+.ticket .body p {
+    font-size: 1.4em;
 }
 
 .ticket .foot {
@@ -133,7 +140,6 @@ body {
     flex-direction: row;
     justify-content: flex-end;
     align-items: flex-end;
-
 }
 
 .ticket .foot button {
@@ -141,13 +147,56 @@ body {
     padding: 5px;
 }
 
+.ticketdeleteform {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.ticketupdateform {
+    display: flex;
+    border: 1px black solid;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    margin: 5px;
+}
+
+.ticketanswer {
+    display: flex;
+    border: 1px black solid;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    margin: 5px;
+}
+
+.reviewupdate {
+    display: flex;
+    border: 1px black solid;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    margin: 5px;
+}
+
+.reviewdelete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    margin: 5px;
+}
+
+
 .review {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     border: 1px black solid;
-    margin: 10px;
+    padding: 5px;
+    margin: 5px;
 }
 
 .review .header {
@@ -159,15 +208,53 @@ body {
     justify-content: space-between;
 }
 
-.review .body {
+.review .header p {
+    margin-right: 10px;
+}
+
+.review .mainbody {
     border: none;
     width: 100%;
     justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.review .mainbody p {
+    display: flex;
+    font-size: 1.5em;
+    width: 100%;
+}
+
+
+.review .incrustedticket {
+    padding: 10px;
+    margin: 10px;
+}
+
+.review .incrustedticketheader {
+    width: 100%;
+    border: none;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.review .incrustedticketbody {
+    border: none;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.review .body h3 {
+    font-size: 1.6;
 }
 
 .review .mainheader {
     border: none;
     width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 .review .mainheadertitle {
@@ -175,22 +262,16 @@ body {
     width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: center;
-    align-items: center;
 }
 
-.review .mainheadertitle p {
-    margin: 10px;
-    justify-content: center;
-    text-align: center;
+.review .mainheadertitle h3 {
+    font-size: 2em;
 }
 
 .review .mainheaderrating {
     border: none;
     width: 100%;
     margin-left: 20px;
-    justify-content: center;
-    align-items: center;
 }
 
 .review .foot {
@@ -200,6 +281,11 @@ body {
     flex-direction: row;
     justify-content: flex-end;
     align-items: flex-end;
+}
+
+.review .foot button {
+    margin: 5px;
+    padding: 5px;
 }
 
 .loginmain {
@@ -228,7 +314,6 @@ body {
     text-align: start;
 }
 
-
 .inscriptionmain .buttons {
     display: flex;
     flex-direction: row;
@@ -250,6 +335,7 @@ body {
 }
 
 .reviewcreation {
+    border: 1px black solid;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -278,4 +364,38 @@ body {
 .followmain p {
     display: flex;
     flex-direction: column;
+}
+
+.review .mainheaderrating {
+    font-size: 2.5em;
+    display: flex;
+    flex-direction: row;
+    border: none;
+    color: gray;
+}
+
+.review .mainheaderrating .checked {
+    color: gold;
+}
+
+
+.followerdisplay ul {
+    display: flex;
+    flex-direction: column;
+}
+
+.followerdisplay li {
+    display: inline-flex;
+    
+}
+
+.followerdisplay li  button {
+    margin-left: 4px;
+}
+
+.reviewupdatecancel {
+    display: flex;
+    border: none;
+    justify-content: center;
+    align-items: center;
 }

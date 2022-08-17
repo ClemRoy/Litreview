@@ -1,14 +1,18 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
 <div class="maincontent sectiontitle">
-<h2>Vos publications:</h2>
+    <h2>Vos publications:</h2>
 </div>
 {% for post in posts %}
-    {% if post.content_type == "ticket" %}
-        {% include "review/snippets/ticket_snippet.html" %}
-    {% elif post.content_type == "review" %}
-        {% include "review/snippets/review_snippet.html" %}
-    {% endif %}
+{% if post.content_type == "ticket" %}
+{% include "review/snippets/ticket_snippet.html" %}
+{% elif post.content_type == "review" %}
+{% include "review/snippets/review_snippet.html" %}
+{% endif %}
 {% endfor %}
-
+{% block page_scripts %}
+<script src="{% static 'rating.js' %}"></script>
+{% endblock %}
 {% endblock content %}

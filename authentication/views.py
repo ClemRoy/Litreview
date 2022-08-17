@@ -22,7 +22,8 @@ def login_page(request):
             else:
                 message = 'Identifiants invalides.'
     return render(
-        request, 'authentication/login.html', context={'form': form, 'message': message})
+        request, 'authentication/login.html',
+        context={'form': form, 'message': message})
 
 
 def logout_user(request):
@@ -37,5 +38,7 @@ def signup_page(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect(settings.LOGIN_REDIRECT_URL)
-    return render(request, "authentication/signup.html", context={"form": form})
+            return redirect(
+                settings.LOGIN_REDIRECT_URL)
+    return render(request, "authentication/signup.html",
+                  context={"form": form})

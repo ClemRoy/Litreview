@@ -9,40 +9,47 @@
     </div>
     <div class="review mainheader">
         <div class="review mainheadertitle ">
-            <h3>Titre:</h3>
-            <p>{{ post.headline }}</p>
+            <h3>{{ post.headline }} </h3>
         </div>
         <div class="review mainheaderrating">
-            <p>ratings:{{ post.rating }}</p>
+            <p hidden>{{ post.rating }}</p>
+            <div class="starcontainer">
+                <span class="fa fa-star"></span>
+                <span class="fa fa-star"></span>
+                <span class="fa fa-star"></span>
+                <span class="fa fa-star"></span>
+                <span class="fa fa-star"></span>
+            </div>
         </div>
     </div>
-    <div class="review main body">
-        {{ post.body }}
+    <div class="review mainbody">
+        <p>{{ post.body }} </p>
     </div>
-    <div class="review incrusted ticket">
-        <div class="review incrusted ticket header">
+    <div class="review incrustedticket">
+        <div class="review incrustedticketheader">
             {% if request.user == post.ticket.user %}
-            <p>Vous avez publié un ticket</p>
+            <p>Vous avez demandé une critique</p>
             {% elif post.ticket.user != request.user %}
-            <p>{{ post.ticket.user}} a publié un ticket</p>
+            <p>{{ post.ticket.user}} a demandé une critique</p>
             {% endif %}
             <p> {{ post.time_created }}</p>
         </div>
-        <div class="review incrusted ticket body">
-            <h3>Titre:</h3>
-            <p> {{ post.ticket.title }}</p>
-            <h3>Déscription:</h3>
+        <div class="review incrustedticketbody">
+            <h3>{{ post.ticket.title }}</h3>
             <p>{{ post.ticket.description }}</p>
             {% if post.ticket.image %}
-            <h3>Image:</h3>
             <img src="{{ post.ticket.image.url }}">
             {% endif %}
         </div>
     </div>
     <div class="review foot">
         {% if request.user == post.user %}
-        <a href="{% url 'review_update' post.id %}"><button>Modifier</button></a>
-        <a href="{% url 'delete_review' post.id %}"><button>Supprimer</button></a>
+        <form action="{% url 'review_update' post.id %}" method="get">
+            <button>Modifier</button>
+        </form>
+        <form action="{% url 'delete_review' post.id %}">
+            <button>Supprimer</button>
+        </form>
         {% endif %}
     </div>
 </div>

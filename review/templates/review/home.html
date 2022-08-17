@@ -1,15 +1,19 @@
 {% extends 'base.html' %}
-{% block content %}
-    <div class="main_content quicklink">
-        <a href="{% url 'ticket' %}"> <button> Demander une critique </button></a>
-        <a href="{% url 'fullreview' %}"> <button>Créer une critique </button></a>
-    </div>
-    {% for post in feed_ready %}
-        {% if post.content_type == "ticket" %}
-            {% include "review/snippets/ticket_snippet.html" %}
-        {% elif post.content_type == "review" %}
-            {% include "review/snippets/review_snippet.html" %}
-        {% endif %}
-    {% endfor %}
-{% endblock content %}
+{% load static %}
 
+{% block content %}
+<div class="main_content quicklink">
+    <form action="{% url 'ticket' %}" method="get"><button> Demander une critique </button></form>
+    <form action="{% url 'fullreview' %}" method="get"><button>Créer une critique </button></form>
+</div>
+{% for post in feed_ready %}
+{% if post.content_type == "ticket" %}
+{% include "review/snippets/ticket_snippet.html" %}
+{% elif post.content_type == "review" %}
+{% include "review/snippets/review_snippet.html" %}
+{% endif %}
+{% endfor %}
+{% block page_scripts %}
+<script src="{% static 'rating.js' %}"></script>
+{% endblock %}
+{% endblock content %}
